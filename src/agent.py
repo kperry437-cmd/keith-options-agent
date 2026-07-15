@@ -76,7 +76,7 @@ def _enter_position(contract: OptionContract, risk: PositionRisk) -> None:
         contract.option_type.upper(),
         contract.strike,
         contract.expiry,
-        contract.entry_premium,
+        risk.entry_premium,
         risk.stop_price,
         risk.target_price,
     )
@@ -180,13 +180,11 @@ def run_cycle(state_path: str = "state.json") -> AgentState:
             logger.warning("Cannot fetch current premium for open position; holding.")
         else:
             # Reconstruct PositionRisk for exit logic.
-            from datetime import datetime as _dt  # noqa: PLC0415
-
             p_risk = PositionRisk(
                 entry_premium=pos.entry_premium,
                 stop_price=pos.stop_price,
                 target_price=pos.target_price,
-                max_exit_time=_dt.fromisoformat(pos.max_exit_time),
+                max_exit_time=datetime.fromisoformat(pos.max_exit_time),
                 contracts=pos.contracts,
                 notional=pos.notional,
             )

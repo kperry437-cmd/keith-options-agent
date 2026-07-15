@@ -57,7 +57,7 @@ def add_sma(
     fast_period: int = 20,
     slow_period: int = 50,
 ) -> pd.DataFrame:
-    """Append ``sma_fast`` and ``sma_slow`` columns to *df* in-place.
+    """Return a copy of *df* with ``sma_fast`` and ``sma_slow`` columns appended.
 
     Parameters
     ----------
@@ -73,10 +73,10 @@ def add_sma(
     pd.DataFrame
         The same DataFrame with two new columns.
     """
-    df = df.copy()
-    df[f"sma_{fast_period}"] = df["close"].rolling(fast_period).mean()
-    df[f"sma_{slow_period}"] = df["close"].rolling(slow_period).mean()
-    return df
+    out = df.copy()
+    out[f"sma_{fast_period}"] = out["close"].rolling(fast_period).mean()
+    out[f"sma_{slow_period}"] = out["close"].rolling(slow_period).mean()
+    return out
 
 
 def get_candles_with_smas(
