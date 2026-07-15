@@ -1,0 +1,42 @@
+{
+  "broker": {
+    "name": "alpaca",
+    "base_url": "https://paper-api.alpaca.markets",
+    "data_url": "https://data.alpaca.markets",
+    "api_key": "",
+    "api_secret": ""
+  },
+  "symbols": ["SPY", "QQQ", "AAPL", "TSLA", "NVDA"],
+  "signal": {
+    "fast_period": 9,
+    "slow_period": 21,
+    "ma_type": "ema",
+    "bar_timeframe": "5Min",
+    "lookback_bars": 60,
+    "confirmation_bars": 1
+  },
+  "options": {
+    "expiry_dte_min": 1,
+    "expiry_dte_max": 7,
+    "delta_target": 0.40,
+    "delta_tolerance": 0.10,
+    "contract_type_on_golden": "call",
+    "contract_type_on_death": "put"
+  },
+  "risk": {
+    "max_portfolio_risk_pct": 0.02,
+    "max_position_risk_pct": 0.01,
+    "max_open_positions": 5,
+    "stop_loss_pct": 0.50,
+    "take_profit_pct": 1.00,
+    "max_daily_loss_pct": 0.05
+  },
+  "agent": {
+    "poll_interval_seconds": 30,
+    "market_open": "09:30",
+    "market_close": "16:00",
+    "timezone": "America/New_York",
+    "dry_run": true,
+    "log_level": "INFO"
+  }
+}
