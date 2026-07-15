@@ -1,0 +1,24 @@
+{
+  "symbol": "SPY",
+  "timeframe_minutes": 5,
+  "sma_periods": [20, 50, 200],
+  "risk": {
+    "max_position_pct": 0.02,
+    "max_daily_loss_pct": 0.05,
+    "max_open_positions": 3,
+    "option_stop_loss_pct": 0.50,
+    "min_dte": 7,
+    "max_dte": 45,
+    "max_delta": 0.45,
+    "min_delta": 0.25
+  },
+  "options": {
+    "contract_quantity": 1
+  },
+  "market_open_hour": 9,
+  "market_open_minute": 30,
+  "market_close_hour": 16,
+  "market_close_minute": 0,
+  "pre_close_buffer_minutes": 30,
+  "post_open_buffer_minutes": 30
+}
