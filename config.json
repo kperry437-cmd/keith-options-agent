@@ -1,0 +1,15 @@
+{
+  "symbols": ["SPY"],
+  "account_equity": 10000.0,
+  "sma_fast": 20,
+  "sma_slow": 50,
+  "proximity_pct": 1.0,
+  "max_dte": 5,
+  "min_open_interest": 10,
+  "risk": {
+    "size_pct": 0.15,
+    "stop_pct": 0.05,
+    "target_pct": 0.25,
+    "max_hold_days": 1
+  }
+}
