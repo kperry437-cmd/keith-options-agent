@@ -1,0 +1,6 @@
+{
+  "max_allocation_pct": 0.15,
+  "max_loss_pct": 0.05,
+  "take_profit_pct": 0.25,
+  "max_hold_minutes": 390
+}
