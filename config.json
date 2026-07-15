@@ -1,0 +1,20 @@
+{
+  "symbols": ["SPY", "QQQ", "AAPL"],
+  "sma_periods": [20, 50, 200],
+  "cross_pairs": [[20, 50], [50, 200], [20, 200]],
+  "paper_trading": true,
+  "risk": {
+    "max_position_size_pct": 0.02,
+    "max_daily_loss_pct": 0.05,
+    "max_open_positions": 5,
+    "stop_loss_pct": 0.50,
+    "profit_target_pct": 1.00,
+    "min_dte": 7,
+    "max_dte": 45,
+    "target_delta": 0.30
+  },
+  "schedule": {
+    "market_open_buffer_min": 30,
+    "market_close_buffer_min": 30
+  }
+}
