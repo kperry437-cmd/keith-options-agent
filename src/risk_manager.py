@@ -1,6 +1,8 @@
 """Strict risk management rules for the options agent."""
 from __future__ import annotations
 
+OPTION_CONTRACT_MULTIPLIER = 100  # standard 100-share multiplier per contract
+
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -156,10 +158,12 @@ class RiskManager:
         Returns at least 1 contract when financially feasible, otherwise 0.
         """
         max_spend = portfolio_value * self._risk.max_position_pct
-        cost_per_contract = option_price * 100  # standard 100-share multiplier
+        cost_per_contract = option_price * OPTION_CONTRACT_MULTIPLIER
         if cost_per_contract <= 0:
             return PositionSizeResult(contracts=0, max_loss=0.0)
-        contracts = max(1, int(max_spend / cost_per_contract))
+        contracts = int(max_spend / cost_per_contract)
+        if contracts < 1:
+            return PositionSizeResult(contracts=0, max_loss=0.0)
         max_loss = contracts * cost_per_contract * self._risk.option_stop_loss_pct
         return PositionSizeResult(contracts=contracts, max_loss=max_loss)
 

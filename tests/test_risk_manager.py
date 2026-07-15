@@ -247,11 +247,12 @@ class TestPositionSizing:
         result = rm.calculate_position_size(100_000, 5.00)
         assert result.contracts == 4
 
-    def test_minimum_one_contract_enforced(self):
+    def test_returns_zero_when_budget_too_small(self):
         rm = RiskManager(_make_config())
-        # max_spend = 5_000 * 0.02 = 100; cost_per_contract = 20 * 100 = 2_000 → 0 → clamp to 1
+        # max_spend = 5_000 * 0.02 = 100; cost_per_contract = 20 * 100 = 2_000 → 0 contracts
         result = rm.calculate_position_size(5_000, 20.00)
-        assert result.contracts == 1
+        assert result.contracts == 0
+        assert result.max_loss == 0.0
 
     def test_zero_price_returns_zero(self):
         rm = RiskManager(_make_config())

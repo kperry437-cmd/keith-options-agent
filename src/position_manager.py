@@ -8,6 +8,8 @@ from dataclasses import asdict, dataclass
 from datetime import date, datetime, timezone
 from typing import Dict, List, Optional
 
+from .risk_manager import OPTION_CONTRACT_MULTIPLIER
+
 logger = logging.getLogger(__name__)
 
 _DEFAULT_STATE_PATH = os.path.join(
@@ -113,7 +115,7 @@ class PositionManager:
         pos = self._positions.get(symbol)
         if pos is None or pos.closed:
             return 0.0
-        pnl = (exit_price - pos.entry_price) * pos.contracts * 100
+        pnl = (exit_price - pos.entry_price) * pos.contracts * OPTION_CONTRACT_MULTIPLIER
         pos.realized_pnl = pnl
         pos.closed = True
         pos.current_price = exit_price
@@ -137,7 +139,7 @@ class PositionManager:
     def daily_pnl(self) -> float:
         """Realized P&L plus unrealized P&L for all open positions."""
         unrealized = sum(
-            (p.current_price - p.entry_price) * p.contracts * 100
+            (p.current_price - p.entry_price) * p.contracts * OPTION_CONTRACT_MULTIPLIER
             for p in self.open_positions
         )
         return self._realized_daily_pnl + unrealized
