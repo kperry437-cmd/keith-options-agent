@@ -150,6 +150,10 @@ def _trade_symbol(
     if underlying_price <= 0:
         # Fall back to last close in the bars DataFrame
         underlying_price = float(bars["close"].iloc[-1])
+        logger.warning(
+            "%s: Could not fetch live underlying price; using last bar close %.2f",
+            symbol, underlying_price,
+        )
 
     # ── 4. Process each signal ───────────────────────────────────────────────
     try:

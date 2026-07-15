@@ -103,20 +103,6 @@ class TestDetectCross:
 
 
 class TestGetSignals:
-    def _make_golden_cross_df(self, fast_p: int = 20, slow_p: int = 50) -> pd.DataFrame:
-        """Construct a DataFrame where fast SMA just crossed above slow SMA."""
-        n = slow_p + 5
-        # Prices start low then spike on the last bar to create a cross
-        closes = [100.0] * n
-        # Depress the first half to push fast SMA below slow, then rally
-        mid = n // 2
-        for i in range(mid):
-            closes[i] = 95.0
-        for i in range(mid, n - 1):
-            closes[i] = 100.0
-        closes[-1] = 130.0  # Sharp rally to trigger golden cross
-        return _make_df(closes)
-
     def test_no_signal_on_flat_prices(self):
         df = _make_df([100.0] * 210)
         signals = get_signals(df, [[20, 50], [50, 200]])
@@ -140,21 +126,19 @@ class TestGetSignals:
             assert s["type"] in ("golden", "death")
 
     def test_golden_cross_detected(self):
-        # SMA(2) vs SMA(3): engineer a cross on the last bar
-        # Prev: SMA(2)=9 <= SMA(3)=10  →  Curr: SMA(2)=12 > SMA(3)=10.67
-        closes = [8.0, 10.0, 12.0, 12.0, 12.0]
-        # SMA(2)[-2] = mean(10,12)=11, SMA(3)[-2] = mean(10,12,12)=11.33  (fast<slow: 11<11.33)
-        # SMA(2)[-1] = mean(12,12)=12, SMA(3)[-1] = mean(12,12,12)=12.00  (fast==slow: no cross)
-        # Let's be explicit:
-        closes = [5.0, 5.0, 5.0, 5.0, 15.0]
+        # SMA(2) vs SMA(3): engineer a strict cross on the last bar.
+        # Bar -2: SMA(2)=mean(6,6)=6.0, SMA(3)=mean(8,6,6)=6.67 → fast < slow ✓
+        # Bar -1: SMA(2)=mean(6,20)=13.0, SMA(3)=mean(6,6,20)=10.67 → fast > slow ✓
+        closes = [10.0, 8.0, 6.0, 6.0, 20.0]
         df = _make_df(closes)
         signals = get_signals(df, [[2, 3]])
         golden = [s for s in signals if s["type"] == "golden"]
         assert len(golden) == 1
 
     def test_death_cross_detected(self):
-        # Prices fall sharply on last bar
-        closes = [15.0, 15.0, 15.0, 15.0, 5.0]
+        # Bar -2: SMA(2)=mean(9,9)=9.0, SMA(3)=mean(7,9,9)=8.33 → fast > slow ✓
+        # Bar -1: SMA(2)=mean(9,2)=5.5, SMA(3)=mean(9,9,2)=6.67 → fast < slow ✓
+        closes = [5.0, 7.0, 9.0, 9.0, 2.0]
         df = _make_df(closes)
         signals = get_signals(df, [[2, 3]])
         death = [s for s in signals if s["type"] == "death"]

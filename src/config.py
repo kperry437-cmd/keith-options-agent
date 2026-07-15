@@ -57,7 +57,7 @@ def _validate(cfg: dict) -> None:
                 f"risk.{key} must be between {lo} and {hi}, got {val!r}"
             )
 
-    _between("max_position_size_pct", 0.001, 1.0)
+    _between("max_position_size_pct", 0.001, 0.25)
     _between("max_daily_loss_pct", 0.001, 1.0)
     _between("stop_loss_pct", 0.01, 1.0)
     _between("profit_target_pct", 0.01, 100.0)

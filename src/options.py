@@ -124,6 +124,9 @@ def _select_by_strike(
     The offset is approximated as (1 - target_delta) * 0.1 which gives rough
     OTM percentages consistent with typical delta levels.
     """
+    # Approximate OTM percentage from target delta.
+    # At 0.30 delta (offset=0.07): call strike ≈ spot * 1.07, put strike ≈ spot * 0.93.
+    # At 0.50 delta (offset=0.05): near-ATM strikes.
     offset = (1.0 - target_delta) * 0.10
     if signal_type == "golden":
         target_strike = spot * (1.0 + offset)

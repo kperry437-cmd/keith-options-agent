@@ -101,8 +101,9 @@ def close_position(
 
     entry = pos.get("entry_price", 0.0)
     qty = pos.get("qty", 0)
-    # Options: P&L = (close - entry) * qty * 100
-    pnl = (close_price - entry) * qty * 100
+    # Standard equity options: each contract controls 100 shares
+    _SHARES_PER_CONTRACT = 100
+    pnl = (close_price - entry) * qty * _SHARES_PER_CONTRACT
     state["daily_pnl"] = state.get("daily_pnl", 0.0) + pnl
     logger.info(
         "Closed %s: entry=%.2f close=%.2f qty=%d P&L=$%.2f",

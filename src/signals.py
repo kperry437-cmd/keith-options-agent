@@ -48,10 +48,10 @@ def detect_cross(
     if any(pd.isna(v) for v in (prev_fast, prev_slow, curr_fast, curr_slow)):
         return None
 
-    was_below = prev_fast <= prev_slow
+    was_below = prev_fast < prev_slow
     now_above = curr_fast > curr_slow
 
-    was_above = prev_fast >= prev_slow
+    was_above = prev_fast > prev_slow
     now_below = curr_fast < curr_slow
 
     if was_below and now_above:
