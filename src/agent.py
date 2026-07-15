@@ -233,11 +233,6 @@ class OptionsAgent:
             exit_price = current_prices.get(symbol, 0.0)
             pnl = self._risk.close_position(symbol, exit_price)
 
-            # Find the state machine for this position's underlying
-            for underlying, sm in self._states.items():
-                for pos in []:  # placeholder; underlying tracked in OpenPosition
-                    pass
-            # Reset state for the underlying via the symbol lookup
             underlying = self._underlying_for_option(symbol)
             if underlying and underlying in self._states:
                 self._states[underlying].reset()
@@ -257,15 +252,42 @@ class OptionsAgent:
         return None
 
     def _fetch_option_prices(self) -> Dict[str, float]:
-        """Return latest mid-prices for all open option positions."""
+        """Return latest mid-prices for all open option positions via Alpaca snapshots."""
         prices: Dict[str, float] = {}
-        for opt_symbol, pos in self._risk.open_positions.items():
-            try:
-                # In a real implementation, fetch live option quotes here
-                # For now, return entry price (no change) as a safe default
+        if not self._risk.open_positions:
+            return prices
+
+        try:
+            from alpaca.data.historical.option import OptionHistoricalDataClient
+            from alpaca.data.requests import OptionSnapshotRequest
+
+            client = OptionHistoricalDataClient(
+                self.cfg.broker.api_key, self.cfg.broker.api_secret
+            )
+            symbols = list(self._risk.open_positions.keys())
+            req = OptionSnapshotRequest(symbol_or_symbols=symbols)
+            snapshots = client.get_option_snapshot(req)
+
+            for opt_symbol, pos in self._risk.open_positions.items():
+                snap = snapshots.get(opt_symbol)
+                if snap is not None and snap.latest_quote is not None:
+                    ask = snap.latest_quote.ask_price
+                    bid = snap.latest_quote.bid_price
+                    if ask is not None and bid is not None and ask > 0 and bid > 0:
+                        prices[opt_symbol] = round((ask + bid) / 2, 4)
+                    elif ask is not None and ask > 0:
+                        prices[opt_symbol] = float(ask)
+                    elif bid is not None and bid > 0:
+                        prices[opt_symbol] = float(bid)
+                    else:
+                        prices[opt_symbol] = pos.entry_price
+                else:
+                    prices[opt_symbol] = pos.entry_price
+        except Exception as exc:
+            logger.error("Failed to fetch option prices: %s", exc)
+            for opt_symbol, pos in self._risk.open_positions.items():
                 prices[opt_symbol] = pos.entry_price
-            except Exception as exc:
-                logger.error("Failed to fetch price for %s: %s", opt_symbol, exc)
+
         return prices
 
     def _get_portfolio_value(self) -> float:
